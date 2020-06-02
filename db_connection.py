@@ -11,8 +11,8 @@ class DBConnection():
         self._port = self.readConfig('port')
         db_name = self.readConfig('database')
         self._database = self.createDB(db_name)
-        self._dbcon = self.connectDB(db_name)
-        self._cursor = self._dbcon.cursor(buffered=True)
+        self._db_conn = self.connectDB(db_name)
+        self._cursor = self._db_conn.cursor(buffered=True)
         self.createTables()
 
     @property
@@ -75,7 +75,7 @@ class DBConnection():
                     print(e)
 
     def login(self, username, password):
-        self.cursor.cmd_change_user(
+        self._db_conn.cmd_change_user(
             username=username, password=password, database=self._database, charset=33)
 
     def connectDB(self, database=None):
