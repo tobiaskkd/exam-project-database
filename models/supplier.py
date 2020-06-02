@@ -1,9 +1,9 @@
-class supplier():
+class Supplier():
 
     def __init__(self, supplier_id=None, supplier_name, supplier_phone, db_conn)
     self._supplier_id = suppplier_id
-    self._supplier_name
-    self._supplier_phone
+    self._supplier_name = supplier_name
+    self._supplier_phone = supplier_phone
     self._db_conn = db_conn
 
 

@@ -88,6 +88,7 @@ class DBConnection():
                     self.execute(line)
                 except Exception as e:
                     print(e)
+            self.commit()
 
     def login(self, username, password):
         self.connection.cmd_change_user(

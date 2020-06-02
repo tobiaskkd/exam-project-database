@@ -1,15 +1,19 @@
-class store():
+class Store():
 
-    def __init__(self, store_id=None, store_title, store_address, store_phone, db_conn)
-    self._store_id = store_id
-    self._store_title
-    self._store_address
-    self._store_phone
-    self._db_conn = db_conn
+    def __init__(self, store_title, store_address, store_phone, db_conn, store_id=None):
+        self._store_id = store_id
+        self._store_title = store_title
+        self._store_address = store_address
+        self._store_phone = store_phone
+        self._db_conn = db_conn
+
+    @property
+    def store_id(self):
+        return self._store_id
 
     @property
     def store_title(self):
-        return self._first_name
+        return self._store_title
 
     @store_title.setter
     def store_title(self, store_title):

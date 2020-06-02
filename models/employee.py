@@ -11,6 +11,7 @@ class Employee():
         self._db_conn = db_conn
         self._end_date = end_date
         self._em_id = em_id
+        self._username = None
 
     @property
     def first_name(self):
@@ -124,6 +125,20 @@ class Employee():
             self._db_conn.query(sql, vals)
         self._end_date = end_date
 
+    @property
+    def username(self):
+        return self._username
+
+    @username.setter
+    def username(self, username):
+        if self._em_id and username:
+            sql = 'UPDATE Employees\n'
+            sql += 'SET employee_username = %s\n'
+            sql += 'WHERE employee_id = %s;'
+            vals = (username, self._em_id)
+            self._db_conn.query(sql, vals)
+        self._username = username
+
     def save(self):
         if self._em_id:
             raise Exception('Already saved')
@@ -152,12 +167,13 @@ class Employee():
 
     def createUser(self, username, password):
         roles = {
-            'Manager': 'manager',
-            'Warehouse Employee': 'warehouseEmployee',
-            'Sales Assistant': 'salesAssistant',
+            'Manager': 'GRANT ALL ON',
+            'Warehouse Employee': 'GRANT SELECT, INSERT, TRIGGER ON TABLE',
+            'Sales Assistant': 'GRANT SELECT, INSERT, TRIGGER ON TABLE',
         }
-        sql = "create user %s@'%%' identified by '%s';\n" % (
+        sql = "create user %s identified by '%s';" % (
             username, password)
         self._db_conn.query(sql)
-        sql = "Grant %s to %s;" % (roles[self.title], username)
+        sql = "%s supershopdb.* to %s;" % (roles[self.title], username)
         self._db_conn.query(sql)
+        self.username = username
