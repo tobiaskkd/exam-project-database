@@ -9,14 +9,9 @@ class DBConnection():
         self._user = self.readConfig('user')
         self._password = self.readConfig('password')
         self._port = self.readConfig('port')
-        self._database = self.createDB()
-        self._dbcon = mysql.connector.connect(
-            host=self._host,
-            user=self._user,
-            password=self._password,
-            database=self._database,
-            port=self._port
-        )
+        db_name = self.readConfig('database')
+        self._database = self.createDB(db_name)
+        self._dbcon = self.connectDB(db_name)
         self._cursor = self._dbcon.cursor(buffered=True)
         self.createTables()
 
@@ -68,12 +63,6 @@ class DBConnection():
             config = yaml.load(f, Loader=yaml.FullLoader)
         return config[setting]
 
-    def createDBCustomers(self):
-        if self.tableExists('Customers'):
-            return False
-        self.execute("CREATE TABLE IF NOT EXISTS Customers (customer_id INT NOT NULL, first_name VARCHAR(45) NOT NULL, middle_name VARCHAR(45) NOT NULL, last_name VARCHAR(45) NOT NULL, customer_phone VARCHAR(11) NOT NULL, customer_email VARCHAR(45) NOT NULL, customer_address VARCHAR(45) NOT NULL, PRIMARY KEY (customer_id))")
-        return True
-
     def createTables(self):
         with open('sql/create_tables.sql') as sql_file:
             sql = sql_file.read()
@@ -89,14 +78,18 @@ class DBConnection():
         self.cursor.cmd_change_user(
             username=username, password=password, database=self._database, charset=33)
 
-    def createDB(self):
-        db_name = self.readConfig('database')
-        db_conn = mysql.connector.connect(
+    def connectDB(self, database=None):
+        return mysql.connector.connect(
             host=self._host,
             user=self._user,
             password=self._password,
+            database=database,
             port=self._port
         )
+
+    def createDB(self, db_name='newDB'):
+        db_conn = self.connectDB()
         db_conn.cursor().execute(
             f'CREATE SCHEMA IF NOT EXISTS {db_name} DEFAULT CHARACTER SET utf8 ;')
+        db_conn.close()
         return db_name
