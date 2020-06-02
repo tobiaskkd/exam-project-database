@@ -1,6 +1,6 @@
 class Employee():
 
-    def __init__(self, first_name, last_name, title, start_date, salary, gender, store_id, db_conn, end_date=None, em_id=None):
+    def __init__(self, first_name, last_name, title, start_date, salary, gender, store_id, db_conn, end_date=None, em_id=None, username=None):
         self._first_name = first_name
         self._last_name = last_name
         self._title = title
@@ -11,7 +11,20 @@ class Employee():
         self._db_conn = db_conn
         self._end_date = end_date
         self._em_id = em_id
-        self._username = None
+        self._username = username
+
+    def delete(self):
+        if self._em_id:
+            try:
+                self._db_conn.query("DELETE FROM Employees where employee_id=%s;" % self._em_id)
+                self._db_conn.query("DROP USER IF EXISTS %s;" % self.username)
+                self._em_id = None
+            except:
+                print('Failed deleting', self.first_name)
+
+    @property
+    def em_id(self):
+        return self._em_id
 
     @property
     def first_name(self):
@@ -173,7 +186,12 @@ class Employee():
         }
         sql = "create user %s identified by '%s';" % (
             username, password)
-        self._db_conn.query(sql)
-        sql = "%s supershopdb.* to %s;" % (roles[self.title], username)
-        self._db_conn.query(sql)
-        self.username = username
+        try:
+            self._db_conn.query(sql)
+            sql = "%s supershopdb.* to %s;" % (roles[self.title], username)
+            self._db_conn.query(sql)
+            self.username = username
+            return True
+        except:
+            print(username, ' already exists')
+        return False

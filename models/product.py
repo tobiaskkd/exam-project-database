@@ -1,4 +1,4 @@
-class Products():
+class Product():
 
     def __init__(self, product_name, product_brand, supplier_id, product_stock, product_is_active, db_conn, product_id=None)
     self._product_id = product_id

@@ -1,5 +1,6 @@
 import mysql.connector
 import yaml
+from .employee import Employee
 
 
 class DBConnection():
@@ -58,12 +59,9 @@ class DBConnection():
             print(e)
 
     def query(self, sql, params=None, multi=False):
-        try:
-            self.cursor.execute(sql, params or (), multi=multi)
-            self.commit()
-            return self.cursor.lastrowid
-        except Exception as e:
-            print(e)
+        self.cursor.execute(sql, params or (), multi=multi)
+        self.commit()
+        return self.cursor.lastrowid
 
     def tableExists(self, table_name=None):
         if self.showTables():
@@ -110,3 +108,19 @@ class DBConnection():
             f'CREATE SCHEMA IF NOT EXISTS {db_name} DEFAULT CHARACTER SET utf8 ;')
         db_conn.close()
         return db_name
+
+    def getAllEmployees(self):
+        self.query("SELECT * FROM supershopdb.Employees;")
+        return [Employee(
+            atts[1],
+            atts[2],
+            atts[3],
+            atts[4],
+            atts[6],
+            atts[7],
+            atts[8],
+            self,
+            atts[5],
+            atts[0],
+            atts[9]
+        ) for atts in self.cursor.fetchall()]
