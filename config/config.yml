@@ -1,5 +1,5 @@
 host: localhost
-user: admin
-password: admin
+user: root
+password: root1234
 database: supershopdb
-port: 9999
+port: 3306

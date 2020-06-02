@@ -18,7 +18,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- Table Customers
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Customers (
-  customer_id INT NOT NULL,
+  customer_id INT NOT NULL AUTO_INCREMENT,
   first_name VARCHAR(45) NOT NULL,
   middle_name VARCHAR(45) NOT NULL,
   last_name VARCHAR(45) NOT NULL,
@@ -33,7 +33,7 @@ ENGINE = InnoDB;
 -- Table Store
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Store (
-  store_id INT NOT NULL,
+  store_id INT NOT NULL AUTO_INCREMENT,
   store_title VARCHAR(45) NOT NULL,
   store_address VARCHAR(45) NOT NULL,
   store_phone VARCHAR(45) NOT NULL,
@@ -45,7 +45,7 @@ ENGINE = InnoDB;
 -- Table Employees
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Employees (
-  employee_id INT NOT NULL,
+  employee_id INT NOT NULL AUTO_INCREMENT,
   first_name VARCHAR(45) NOT NULL,
   last_name VARCHAR(45) NOT NULL,
   employee_title VARCHAR(45) NOT NULL,
@@ -68,7 +68,7 @@ ENGINE = InnoDB;
 -- Table Card
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Card (
-  card_id INT NOT NULL,
+  card_id INT NOT NULL AUTO_INCREMENT,
   card_number VARCHAR(45) NOT NULL,
   card_expire_date DATETIME NOT NULL,
   Customers_customer_id INT NOT NULL,
@@ -87,7 +87,7 @@ ENGINE = InnoDB;
 -- Table Orders
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Orders (
-  order_id INT NOT NULL,
+  order_id INT NOT NULL AUTO_INCREMENT,
   order_placed DATETIME NOT NULL,
   total_order_price VARCHAR(45) NOT NULL,
   Employee_employee_id INT NOT NULL,
@@ -119,7 +119,7 @@ ENGINE = InnoDB;
 -- Table Supplier
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Supplier (
-  supplier_id INT NOT NULL,
+  supplier_id INT NOT NULL AUTO_INCREMENT,
   supplier_name VARCHAR(45) NOT NULL,
   supplier_phone VARCHAR(11) NOT NULL,
   PRIMARY KEY (supplier_id))
@@ -130,7 +130,7 @@ ENGINE = InnoDB;
 -- Table Products
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Products (
-  product_id INT NOT NULL,
+  product_id INT NOT NULL AUTO_INCREMENT,
   product_name VARCHAR(45) NOT NULL,
   product_brand VARCHAR(45) NOT NULL,
   Supplier_supplier_id INT NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS Products (
   PRIMARY KEY (product_id),
   INDEX fk_Products_Supplier1_idx (Supplier_supplier_id ASC) ,
   UNIQUE INDEX product_name_UNIQUE (product_name ASC) ,
-  CONSTRAINT fk_Products_Supplier1
+  CONSTRAINT fk_Products_Supplier
     FOREIGN KEY (Supplier_supplier_id)
     REFERENCES Supplier (supplier_id)
     ON DELETE NO ACTION
@@ -151,7 +151,7 @@ ENGINE = InnoDB;
 -- Table Order_Delivery
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Order_Delivery (
-  order_delivery_id INT NOT NULL,
+  order_delivery_id INT NOT NULL AUTO_INCREMENT,
   delivery_status_code INT(3) NOT NULL,
   delivery_date DATETIME NOT NULL,
   Orders_order_id INT NOT NULL,
@@ -169,7 +169,7 @@ ENGINE = InnoDB;
 -- Table Campaigns
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Campaigns (
-  campaign_id INT NOT NULL,
+  campaign_id INT NOT NULL AUTO_INCREMENT,
   campaign_name VARCHAR(45) NOT NULL,
   campaign_discount INT NOT NULL,
   campaign_start_date DATETIME NOT NULL,
@@ -227,7 +227,7 @@ ENGINE = InnoDB;
 -- Table Prices
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS Prices (
-  price_id INT NOT NULL,
+  price_id INT NOT NULL AUTO_INCREMENT,
   price_start_date DATETIME NOT NULL,
   price_end_date DATETIME NOT NULL,
   price FLOAT NOT NULL,
@@ -245,3 +245,39 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema supershop
+-- -----------------------------------------------------
+CREATE ROLE IF NOT EXISTS customer;
+
+GRANT SELECT ON TABLE supershop.* TO customer;
+
+CREATE ROLE IF NOT EXISTS manager;
+
+GRANT ALL ON supershop.* TO manager;
+GRANT SELECT, INSERT, TRIGGER ON TABLE supershop.* TO manager;
+GRANT SELECT, INSERT, TRIGGER, UPDATE, DELETE ON TABLE supershop.* TO manager;
+
+CREATE ROLE IF NOT EXISTS warehouseEmployee;
+
+GRANT SELECT ON TABLE supershop.* TO warehouseEmployee;
+GRANT SELECT, INSERT, TRIGGER ON TABLE supershop.* TO warehouseEmployee;
+
+CREATE ROLE IF NOT EXISTS salesAssistant;
+
+GRANT SELECT, INSERT, TRIGGER ON TABLE supershop.* TO salesAssistant;
+GRANT SELECT ON TABLE supershop.* TO salesAssistant;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+FLUSH PRIVILEGES;

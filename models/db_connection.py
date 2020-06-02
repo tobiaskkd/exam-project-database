@@ -31,6 +31,10 @@ class DBConnection():
     def password(self):
         return self._password
 
+    @property
+    def database(self):
+        return self._database
+
     @user.setter
     def user(self, user):
         self._user = user
@@ -48,7 +52,18 @@ class DBConnection():
         self.connection.close()
 
     def execute(self, sql, params=None, multi=False):
-        self.cursor.execute(sql, params or (), multi=multi)
+        try:
+            self.cursor.execute(sql, params or (), multi=multi)
+        except Exception as e:
+            print(e)
+
+    def query(self, sql, params=None, multi=False):
+        try:
+            self.cursor.execute(sql, params or (), multi=multi)
+            self.commit()
+            return self.cursor.lastrowid
+        except Exception as e:
+            print(e)
 
     def tableExists(self, table_name=None):
         if self.showTables():
@@ -75,7 +90,7 @@ class DBConnection():
                     print(e)
 
     def login(self, username, password):
-        self._db_conn.cmd_change_user(
+        self.connection.cmd_change_user(
             username=username, password=password, database=self._database, charset=33)
 
     def connectDB(self, database=None):
@@ -84,7 +99,8 @@ class DBConnection():
             user=self._user,
             password=self._password,
             database=database,
-            port=self._port
+            port=self._port,
+            auth_plugin='mysql_native_password'
         )
 
     def createDB(self, db_name='newDB'):
